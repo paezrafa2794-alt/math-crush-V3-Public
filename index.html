@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Crush 💖</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pk:#FF6B9D; --pk2:#FF8FB5; --rose:#FFB3C6;
+  --lv:#C084FC; --lv2:#D8A8FC;
+  --bg:#FFF0F5; --card:#FFFFFF; --peach:#FFE4F0;
+  --gold:#FFD700; --text:#3D1A2E; --soft:#9B5B7A;
+  --grn:#52C97A; --red:#FF7096;
+  --sh:0 6px 28px rgba(255,107,157,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── floating hearts bg ── */
+.hbg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.hrt{position:absolute;bottom:-40px;animation:floatUp linear infinite;opacity:.13}
+@keyframes floatUp{0%{transform:translateY(0) rotate(0);opacity:.13}100%{transform:translateY(-110vh) rotate(30deg);opacity:0}}
+
+/* ── header ── */
+header{position:relative;z-index:10;background:linear-gradient(135deg,#FF6B9D,#C084FC);
+  padding:12px 20px 0;display:flex;flex-direction:column;
+  box-shadow:0 4px 20px rgba(192,132,252,.3)}
+.hdr-top{display:flex;align-items:center;gap:10px;padding-bottom:10px}
+.app-title{font-family:'Pacifico',cursive;font-size:1.5rem;color:#fff}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.lives-disp{font-size:1.05rem;letter-spacing:1px}
+.xp-pill{background:rgba(255,255,255,.22);border-radius:50px;padding:4px 12px;
+  font-size:.8rem;font-weight:800;color:#fff}
+.streak-pill{background:rgba(255,215,0,.3);border-radius:50px;padding:4px 12px;
+  font-size:.8rem;font-weight:800;color:#fff;display:flex;align-items:center;gap:4px}
+
+/* ── ticker (tabla del momento) ── */
+.ticker-wrap{
+  background:rgba(255,255,255,.15);
+  border-radius:0;padding:6px 20px 10px;
+  overflow:hidden;white-space:nowrap;
+}
+.ticker-inner{display:inline-flex;gap:28px;animation:tickerMove 18s linear infinite}
+@keyframes tickerMove{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ticker-item{font-family:'Pacifico',cursive;font-size:.8rem;color:rgba(255,255,255,.9);
+  display:inline-flex;align-items:center;gap:5px}
+.ticker-item .tbl{color:#fff;font-weight:900}
+.ticker-item .teq{color:rgba(255,255,255,.7)}
+.ticker-item .tres{color:var(--gold);font-weight:900}
+
+/* ── racha / progress strip ── */
+.prog-strip{position:relative;z-index:10;background:#fff;padding:9px 20px;
+  display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(255,107,157,.07)}
+.prog-label{font-size:.75rem;font-weight:800;color:var(--soft);white-space:nowrap}
+.prog-track{flex:1;height:9px;background:var(--peach);border-radius:50px;overflow:hidden}
+.prog-fill{height:100%;border-radius:50px;
+  background:linear-gradient(90deg,var(--pk),var(--lv));transition:width .5s ease}
+.streak-info{font-size:.75rem;font-weight:800;color:var(--pk);white-space:nowrap}
+
+/* ── main ── */
+main{position:relative;z-index:5;max-width:640px;margin:0 auto;padding:20px 16px 80px;
+  display:flex;flex-direction:column;gap:18px}
+
+/* ── date card ── */
+.date-card{background:var(--card);border-radius:22px;padding:18px;box-shadow:var(--sh);
+  display:flex;gap:14px;align-items:flex-start;border-top:4px solid var(--pk);
+  animation:slideIn .4s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.av-wrap{position:relative;flex-shrink:0}
+.avatar{width:58px;height:58px;border-radius:50%;
+  background:linear-gradient(135deg,var(--rose),var(--lv2));
+  display:flex;align-items:center;justify-content:center;font-size:2rem;
+  box-shadow:0 4px 12px rgba(255,107,157,.3)}
+.online{position:absolute;bottom:2px;right:2px;width:13px;height:13px;border-radius:50%;
+  background:var(--grn);border:2.5px solid #fff}
+.date-name{font-family:'Pacifico',cursive;font-size:1.05rem;color:var(--pk);margin-bottom:2px}
+.date-tag{font-size:.68rem;font-weight:800;color:var(--soft);letter-spacing:.5px;margin-bottom:8px}
+.date-msg{background:var(--peach);border-radius:14px;border-bottom-left-radius:4px;
+  padding:11px 13px;font-size:.88rem;line-height:1.5;color:var(--text)}
+.date-msg b{color:var(--pk)}
+
+/* ── start btn ── */
+.start-btn{background:linear-gradient(135deg,var(--pk),var(--lv));color:#fff;border:none;
+  border-radius:50px;padding:16px 32px;font-family:'Pacifico',cursive;font-size:1.2rem;
+  cursor:pointer;box-shadow:0 6px 20px rgba(255,107,157,.35);transition:all .2s;
+  align-self:center;width:100%;max-width:400px;text-align:center}
+.start-btn:hover{transform:translateY(-2px) scale(1.02)}
+
+/* ── exercise overlay ── */
+#ov{display:none;position:fixed;inset:0;z-index:100;background:var(--bg);
+  flex-direction:column;overflow-y:auto}
+#ov.show{display:flex}
+.ov-hdr{background:linear-gradient(135deg,var(--pk),var(--lv));padding:13px 18px;
+  display:flex;align-items:center;gap:10px;flex-shrink:0}
+.ov-close{background:rgba(255,255,255,.25);border:none;border-radius:50%;
+  width:34px;height:34px;cursor:pointer;font-size:1rem;color:#fff;
+  display:flex;align-items:center;justify-content:center}
+.ov-close:hover{background:rgba(255,255,255,.4)}
+.ov-prog-wrap{flex:1;height:10px;background:rgba(255,255,255,.3);border-radius:50px;overflow:hidden}
+.ov-prog-fill{height:100%;background:#fff;border-radius:50px;transition:width .45s ease}
+.ov-lives{font-size:1rem;letter-spacing:1px}
+.ov-body{flex:1;max-width:560px;width:100%;margin:0 auto;
+  padding:22px 16px 40px;display:flex;flex-direction:column;gap:18px;align-items:center}
+
+/* ── type badge ── */
+.type-badge{background:var(--peach);border-radius:50px;padding:5px 16px;
+  font-size:.72rem;font-weight:800;color:var(--pk);letter-spacing:.5px;align-self:flex-start}
+.prompt{font-family:'Pacifico',cursive;font-size:1.3rem;color:var(--text);
+  text-align:center;line-height:1.4}
+.big-q{font-family:'Pacifico',cursive;font-size:2.4rem;color:var(--pk);text-align:center}
+
+/* ── MC ── */
+.mc-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;width:100%}
+.mc-btn{background:var(--card);border:3px solid var(--peach);border-radius:15px;
+  padding:17px 10px;font-family:'Nunito',sans-serif;font-weight:800;font-size:1.5rem;
+  cursor:pointer;transition:all .18s;color:var(--text);
+  box-shadow:0 3px 10px rgba(255,107,157,.08)}
+.mc-btn:hover:not(:disabled){border-color:var(--pk);background:#fff5f9;transform:scale(1.03)}
+.mc-btn.ok{background:#D4F5E5;border-color:var(--grn);color:#1a7a45}
+.mc-btn.no{background:#FFE5EC;border-color:var(--red);animation:wgl .4s}
+@keyframes wgl{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
+/* ── TYPE INPUT (teclear) ── */
+.type-input-wrap{width:100%;display:flex;flex-direction:column;align-items:center;gap:16px}
+.type-input-display{
+  font-family:'Pacifico',cursive;font-size:2.2rem;color:var(--pk);
+  background:var(--card);border:3px solid var(--peach);border-radius:18px;
+  padding:18px 32px;min-width:140px;text-align:center;
+  box-shadow:var(--sh);transition:border-color .2s;letter-spacing:2px}
+.type-input-display.active{border-color:var(--lv)}
+.type-input-display.ok{background:#D4F5E5;border-color:var(--grn);color:#1a7a45}
+.type-input-display.no{background:#FFE5EC;border-color:var(--red);color:#c0364a;animation:wgl .4s}
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:300px}
+.np-btn{background:var(--card);border:2.5px solid var(--peach);border-radius:14px;
+  padding:16px 8px;font-family:'Nunito',sans-serif;font-weight:900;font-size:1.4rem;
+  cursor:pointer;transition:all .15s;color:var(--text);box-shadow:0 3px 8px rgba(255,107,157,.08)}
+.np-btn:hover{border-color:var(--pk);background:#fff5f9;transform:scale(1.05)}
+.np-btn:active{transform:scale(.96)}
+.np-btn.del{background:var(--peach);font-size:1.1rem}
+.np-btn.ok-btn{background:linear-gradient(135deg,var(--pk),var(--lv));color:#fff;
+  border-color:transparent;box-shadow:0 4px 14px rgba(255,107,157,.3)}
+
+/* ── drag pairs ── */
+.drag-area{width:100%;display:flex;gap:14px}
+.drag-col{flex:1;display:flex;flex-direction:column;gap:9px}
+.drag-col-title{font-size:.72rem;font-weight:800;color:var(--soft);text-align:center;letter-spacing:.4px}
+.drag-item{background:linear-gradient(135deg,var(--pk),var(--lv));color:#fff;
+  border-radius:13px;padding:13px 8px;text-align:center;font-weight:800;font-size:1.05rem;
+  cursor:grab;user-select:none;box-shadow:0 4px 12px rgba(255,107,157,.22);
+  transition:transform .18s,opacity .18s;touch-action:none}
+.drag-item:active{cursor:grabbing;transform:scale(1.05)}
+.drag-item.placed{opacity:.28;pointer-events:none}
+.drop-zone{background:var(--card);border:2.5px dashed var(--rose);border-radius:13px;
+  padding:13px 8px;text-align:center;font-weight:800;font-size:.88rem;color:var(--soft);
+  min-height:50px;transition:all .18s;display:flex;align-items:center;
+  justify-content:center;flex-direction:column;gap:3px}
+.drop-zone.over{border-color:var(--pk);background:#fff5f9;transform:scale(1.02)}
+.drop-zone.ok-drop{background:#D4F5E5;border-color:var(--grn);border-style:solid}
+.drop-zone.no-drop{background:#FFE5EC;border-color:var(--red);border-style:solid;animation:wgl .4s}
+.drop-val{font-size:.72rem;color:var(--soft)}
+.drop-chip{background:linear-gradient(135deg,var(--pk),var(--lv));color:#fff;
+  border-radius:7px;padding:3px 9px;font-size:.82rem;font-weight:800}
+
+/* ── fill drag ── */
+.eq-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  justify-content:center;font-family:'Pacifico',cursive;font-size:2rem}
+.eq-blank{min-width:54px;height:50px;background:var(--card);border:3px dashed var(--rose);
+  border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;font-weight:900;color:var(--pk);transition:all .18s;touch-action:none}
+.eq-blank.over{border-color:var(--pk);background:#fff5f9}
+.eq-blank.filled{border-style:solid;border-color:var(--lv);background:#f9f0ff}
+.num-bank{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-top:6px}
+.num-chip{background:linear-gradient(135deg,var(--lv),var(--pk));color:#fff;
+  border-radius:11px;padding:11px 16px;font-weight:900;font-size:1.2rem;
+  cursor:grab;user-select:none;box-shadow:0 4px 12px rgba(192,132,252,.28);
+  transition:transform .18s,opacity .18s;touch-action:none}
+.num-chip:active{cursor:grabbing;transform:scale(1.07)}
+.num-chip.used{opacity:.28;pointer-events:none}
+
+/* ── check / next ── */
+.check-btn{width:100%;max-width:380px;background:linear-gradient(135deg,var(--pk),var(--lv));
+  color:#fff;border:none;border-radius:50px;padding:15px;
+  font-family:'Pacifico',cursive;font-size:1.1rem;cursor:pointer;
+  box-shadow:0 6px 18px rgba(255,107,157,.32);transition:all .2s}
+.check-btn:hover:not(:disabled){transform:translateY(-2px) scale(1.02)}
+.check-btn:disabled{opacity:.42;cursor:not-allowed;transform:none}
+
+/* ── feedback ── */
+.fb{width:100%;max-width:480px;border-radius:17px;padding:16px 18px;
+  display:none;flex-direction:column;gap:5px;animation:slideIn .3s ease}
+.fb.show{display:flex}
+.fb.ok{background:#D4F5E5;border-left:5px solid var(--grn)}
+.fb.no{background:#FFE5EC;border-left:5px solid var(--red)}
+.fb-title{font-weight:900;font-size:.98rem}
+.fb-body{font-size:.85rem;color:var(--soft)}
+.next-btn{margin-top:7px;align-self:flex-start;background:var(--grn);color:#fff;
+  border:none;border-radius:50px;padding:9px 22px;font-family:'Nunito',sans-serif;
+  font-weight:800;font-size:.88rem;cursor:pointer;transition:all .18s}
+.next-btn:hover{transform:scale(1.04)}
+
+/* ── complete screen ── */
+#comp{display:none;position:fixed;inset:0;z-index:200;
+  background:linear-gradient(135deg,#FF6B9D,#C084FC);
+  flex-direction:column;align-items:center;justify-content:center;
+  gap:16px;text-align:center;padding:28px}
+#comp.show{display:flex}
+.comp-emoji{font-size:4rem;animation:bob 1.5s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.comp-title{font-family:'Pacifico',cursive;font-size:1.9rem;color:#fff}
+.comp-msg{font-size:.95rem;color:rgba(255,255,255,.9);line-height:1.6;max-width:340px}
+.comp-stat{background:rgba(255,255,255,.2);border-radius:50px;padding:10px 24px;
+  font-family:'Pacifico',cursive;font-size:1.1rem;color:#fff}
+.comp-home{background:#fff;color:var(--pk);border:none;border-radius:50px;
+  padding:13px 38px;font-family:'Pacifico',cursive;font-size:1.05rem;
+  cursor:pointer;transition:all .2s;margin-top:6px;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+.comp-home:hover{transform:scale(1.05)}
+
+/* ── confetti ── */
+.conf-wrap{position:fixed;inset:0;pointer-events:none;z-index:300}
+.cf{position:absolute;top:-10px;animation:cfall linear forwards}
+@keyframes cfall{to{transform:translateY(105vh) rotate(540deg);opacity:0}}
+
+/* ── touch ghost ── */
+#drag-ghost{position:fixed;pointer-events:none;z-index:9999;opacity:.82;display:none;
+  transform:translate(-50%,-50%);border-radius:13px;padding:11px 16px;
+  font-weight:800;font-size:1rem;color:#fff;
+  background:linear-gradient(135deg,var(--pk),var(--lv));
+  box-shadow:0 6px 20px rgba(255,107,157,.4);white-space:nowrap}
+</style>
+</head>
+<body>
+
+<div class="hbg" id="hbg"></div>
+<div id="drag-ghost"></div>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="hdr-top">
+    <div>
+      <div class="app-title">Math Crush 💖</div>
+    </div>
+    <div class="hdr-right">
+      <span class="streak-pill" id="streak-pill">🔥 0 días</span>
+      <span class="xp-pill" id="xp-pill">✨ 0 XP</span>
+      <span class="lives-disp" id="lives-disp">❤️❤️❤️❤️❤️</span>
+    </div>
+  </div>
+  <!-- Ticker de tablas -->
+  <div class="ticker-wrap">
+    <div class="ticker-inner" id="ticker"></div>
+  </div>
+</header>
+
+<!-- ══ PROGRESS STRIP ══ -->
+<div class="prog-strip">
+  <span class="prog-label" id="prog-label">0 / 10</span>
+  <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  <span class="streak-info" id="streak-info">Racha: 0 días 🔥</span>
+</div>
+
+<!-- ══ MAIN ══ -->
+<main>
+  <div class="date-card">
+    <div class="av-wrap">
+      <div class="avatar" id="date-av">🧑</div>
+      <div class="online"></div>
+    </div>
+    <div style="flex:1">
+      <div class="date-name" id="date-name">…</div>
+      <div class="date-tag">PRETENDIENTE DEL DÍA 💌</div>
+      <div class="date-msg" id="date-msg">…</div>
+    </div>
+  </div>
+
+  <button class="start-btn" onclick="startSession()">¡Empezar los 10 ejercicios! 💫</button>
+</main>
+
+<!-- ══ EXERCISE OVERLAY ══ -->
+<div id="ov">
+  <div class="ov-hdr">
+    <button class="ov-close" onclick="closeOv()">✕</button>
+    <div class="ov-prog-wrap"><div class="ov-prog-fill" id="ov-prog"></div></div>
+    <span class="ov-lives" id="ov-lives">❤️❤️❤️❤️❤️</span>
+  </div>
+  <div class="ov-body" id="ov-body"></div>
+</div>
+
+<!-- ══ COMPLETE SCREEN ══ -->
+<div id="comp">
+  <div class="comp-emoji" id="comp-emoji">🎉</div>
+  <div class="comp-title">¡Sesión completa!</div>
+  <div class="comp-msg" id="comp-msg"></div>
+  <div class="comp-stat" id="comp-stat"></div>
+  <button class="comp-home" onclick="goHome()">Volver al inicio 🏠</button>
+</div>
+
+<div class="conf-wrap" id="conf-wrap"></div>
+
+<script>
+// ══════════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════════
+const BOYS=[
+  {name:'Mateo',    emoji:'🧑',
+   msg:(a,b)=>`Oye 😊 Si <b>${a}×${b}</b> fuera el número de minutos que quiero hablar contigo, ¿cuánto tiempo sería? Respóndeme 💬`},
+  {name:'Sebastián',emoji:'🎸',
+   msg:(a,b)=>`Hola 🎵 Compuse una canción con <b>${a}</b> estrofas de <b>${b}</b> versos cada una… ¿cuántos versos en total? Prometo dedicártela 🎶`},
+  {name:'Axel',     emoji:'🎮',
+   msg:(a,b)=>`gg 🎮 Tengo <b>${a}</b> niveles de <b>${b}</b> mundos cada uno. ¿Cuántos mundos? Es la contraseña de mi corazón 💙`},
+  {name:'Diego',    emoji:'💻',
+   msg:(a,b)=>`Hola 💻 Mi función tiene <b>${a}</b> parámetros de <b>${b}</b> bits. ¿Cuántos bits? Pasa el test y hablamos 😏`},
+  {name:'Emilio',   emoji:'🔭',
+   msg:(a,b)=>`🌌 Vi <b>${a}</b> constelaciones de <b>${b}</b> estrellas cada una… ¿cuántas en total? Una eres tú ✨`},
+  {name:'Rodrigo',  emoji:'🏋️',
+   msg:(a,b)=>`Epa 💪 Hice <b>${a}</b> series de <b>${b}</b> repeticiones. ¿Cuántas en total? Si aciertas te invito un smoothie 🥤`},
+  {name:'Carlos',   emoji:'🎨',
+   msg:(a,b)=>`Hola 🎨 Pinté <b>${a}</b> cuadros con <b>${b}</b> colores cada uno. ¿Cuántos colores? Soy yo pensando en ti 🌈`},
+];
+
+const TABLES=[2,3,4,5,6,7,8,9,10,11,12];
+
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+let S={xp:0,lives:5,steps:[],idx:0,correct:0,boy:null,
+       typedVal:'',streak:0};
+
+// ══════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function seeded(s,max){let x=Math.sin(s+1)*99999;return Math.floor((x-Math.floor(x))*max)}
+function daySeed(){const d=new Date();return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate()}
+function todayStr(){const d=new Date();return d.toISOString().slice(0,10)}
+function livesHTML(n){return'❤️'.repeat(n)+'🖤'.repeat(5-n)}
+function syncLives(){document.getElementById('lives-disp').innerHTML=livesHTML(S.lives);document.getElementById('ov-lives').innerHTML=livesHTML(S.lives)}
+function syncXP(){document.getElementById('xp-pill').textContent=`✨ ${S.xp} XP`}
+function syncProg(){
+  const pct=Math.round((S.idx/S.steps.length)*100);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-label').textContent=`${S.idx} / ${S.steps.length}`;
+  document.getElementById('ov-prog').style.width=pct+'%';
+}
+
+// ══════════════════════════════════════════════
+//  1. STREAK — localStorage
+// ══════════════════════════════════════════════
+function loadStreak(){
+  const last=localStorage.getItem('mc_last_day');
+  const streak=parseInt(localStorage.getItem('mc_streak')||'0');
+  const today=todayStr();
+  const yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
+  if(last===today){
+    S.streak=streak; // ya jugó hoy, mantener
+  } else if(last===yesterday){
+    S.streak=streak; // jugó ayer, racha activa (subirá al completar)
+  } else {
+    S.streak=0; // rompió racha
+    localStorage.setItem('mc_streak','0');
+  }
+  renderStreak();
+}
+function saveStreak(){
+  const today=todayStr();
+  const last=localStorage.getItem('mc_last_day');
+  if(last!==today){
+    S.streak+=1;
+    localStorage.setItem('mc_streak',String(S.streak));
+    localStorage.setItem('mc_last_day',today);
+  }
+  renderStreak();
+}
+function renderStreak(){
+  const t=S.streak===1?'día':'días';
+  document.getElementById('streak-pill').textContent=`🔥 ${S.streak} ${t}`;
+  document.getElementById('streak-info').textContent=`Racha: ${S.streak} ${t} 🔥`;
+}
+
+// ══════════════════════════════════════════════
+//  2. TICKER — tabla aleatoria desfilando
+// ══════════════════════════════════════════════
+function buildTicker(){
+  const ticker=document.getElementById('ticker');
+  ticker.innerHTML='';
+  // Elegir tabla aleatoria (cambia cada 18 s por la animación)
+  const t=pick(TABLES);
+  const items=[];
+  for(let i=1;i<=12;i++){
+    items.push(`<span class="ticker-item">
+      <span class="tbl">${t}×${i}</span>
+      <span class="teq">=</span>
+      <span class="tres">${t*i}</span>
+    </span>`);
+  }
+  // duplicar para loop continuo
+  const html=items.join('')+items.join('');
+  ticker.innerHTML=html;
+  // Recalcular velocidad según ancho
+  const totalW=ticker.scrollWidth/2;
+  const spd=Math.max(12,totalW/28); // px/s aprox
+  ticker.style.animationDuration=spd+'s';
+}
+
+function startTickerRotation(){
+  buildTicker();
+  setInterval(buildTicker, 20000); // nueva tabla cada 20 s
+}
+
+// ══════════════════════════════════════════════
+//  HEARTS BG
+// ══════════════════════════════════════════════
+function spawnHearts(){
+  const w=document.getElementById('hbg');
+  const sym=['💕','💗','💖','✨','🌸','💝','⭐'];
+  for(let i=0;i<16;i++){
+    const h=document.createElement('div');h.className='hrt';
+    h.textContent=pick(sym);
+    h.style.left=Math.random()*100+'vw';
+    h.style.fontSize=(.7+Math.random()*.7)+'rem';
+    h.style.animationDuration=(9+Math.random()*12)+'s';
+    h.style.animationDelay=(Math.random()*14)+'s';
+    w.appendChild(h);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  DAILY SETUP
+// ══════════════════════════════════════════════
+function setupDay(){
+  const ds=daySeed();
+  S.boy=BOYS[seeded(ds,BOYS.length)];
+  S.boy._a=seeded(ds+3,11)+2;
+  S.boy._b=seeded(ds+7,11)+2;
+  document.getElementById('date-av').textContent=S.boy.emoji;
+  document.getElementById('date-name').textContent=S.boy.name;
+  document.getElementById('date-msg').innerHTML=S.boy.msg(S.boy._a,S.boy._b);
+}
+
+// ══════════════════════════════════════════════
+//  STEP GENERATORS
+// ══════════════════════════════════════════════
+function mcOpts(ans){
+  const s=new Set([ans]);
+  while(s.size<4){let f=Math.max(1,ans+rnd(-16,16));if(f!==ans)s.add(f);}
+  return [...s].sort(()=>Math.random()-.5);
+}
+function makeMC(t,b){
+  const ans=t*b;
+  return{kind:'mc',label:'💬 RESPUESTA RÁPIDA',
+    prompt:'¿Cuánto es?',bigQ:`${t} × ${b}`,ans,opts:mcOpts(ans)};
+}
+function makeType(t,b){
+  const ans=t*b;
+  return{kind:'type',label:'⌨️ ESCRIBE LA RESPUESTA',
+    prompt:'¿Cuánto es?',bigQ:`${t} × ${b}`,ans};
+}
+function makeDrag(){
+  const t=pick(TABLES);
+  const nums=[];
+  while(nums.length<4){const n=rnd(1,12);if(!nums.includes(n))nums.push(n);}
+  const pairs=nums.map(n=>({q:`${t}×${n}`,a:t*n}));
+  return{kind:'drag',label:'🔗 UNE LOS PARES',t,pairs};
+}
+function makeFill(){
+  // Totalmente autónomo: genera sus propios factores acotados 1-12
+  var t = TABLES[Math.floor(Math.random()*TABLES.length)]; // 2-12
+  var b = 1 + Math.floor(Math.random()*12);                // 1-12 SIEMPRE
+  var ans = t * b;
+  var side = Math.random()>.5 ? 'left' : 'right';
+  var correct = side==='left' ? t : b;
+  var known   = side==='left' ? b : t;
+  var opts = new Set([correct]);
+  while(opts.size < 6){
+    var f = 1 + Math.floor(Math.random()*12);
+    if(f !== correct) opts.add(f);
+  }
+  return{kind:'fill', label:'🔢 ARRASTRA EL NÚMERO',
+    t:t, b:b, ans:ans, side:side, correct:correct, known:known,
+    opts:[...opts].sort(function(){return Math.random()-.5})};
+}
+
+function generateSteps(){
+  const steps=[];
+  // paso 0: mensaje del chico (siempre tipo mc)
+  const a0=S.boy._a*S.boy._b;
+  steps.push({kind:'mc',label:'💌 MENSAJE DEL DÍA',
+    prompt:`${S.boy.name} pregunta: ¿cuánto es ${S.boy._a} × ${S.boy._b}?`,
+    bigQ:null,ans:a0,opts:mcOpts(a0)});
+
+  // 9 pasos aleatorios mezclando los 4 tipos
+  const pool=['mc','mc','type','type','drag','drag','fill','fill','type'];
+  pool.sort(()=>Math.random()-.5);
+  pool.forEach(k=>{
+    const t=pick(TABLES),b=rnd(1,12);
+    if(k==='mc')   steps.push(makeMC(t,b));
+    else if(k==='type') steps.push(makeType(t,b));
+    else if(k==='drag') steps.push(makeDrag());
+    else            steps.push(makeFill());
+  });
+  return steps;
+}
+
+// ══════════════════════════════════════════════
+//  SESSION CONTROL
+// ══════════════════════════════════════════════
+function startSession(){
+  S.lives=5;S.xp=0;S.correct=0;S.idx=0;
+  S.steps=generateSteps();
+  syncLives();syncXP();syncProg();
+  document.getElementById('ov').classList.add('show');
+  renderStep();
+}
+function closeOv(){document.getElementById('ov').classList.remove('show')}
+function nextStep(){
+  S.idx++;syncProg();
+  if(S.idx>=S.steps.length){showComplete();return;}
+  renderStep();
+}
+
+// ══════════════════════════════════════════════
+//  RENDER STEP
+// ══════════════════════════════════════════════
+function renderStep(){
+  const s=S.steps[S.idx];
+  const body=document.getElementById('ov-body');
+  body.innerHTML='';
+  if(s.kind==='mc')   buildMC(s,body);
+  else if(s.kind==='type') buildTypeInput(s,body);
+  else if(s.kind==='drag') buildDrag(s,body);
+  else                buildFill(s,body);
+}
+
+// ── MC ───────────────────────────────────────
+function buildMC(s,body){
+  const w=mk('div','width:100%;display:flex;flex-direction:column;gap:16px;align-items:center');
+  w.innerHTML=`
+    <div class="type-badge">${s.label}</div>
+    <div class="prompt">${s.prompt}</div>
+    ${s.bigQ?`<div class="big-q">${s.bigQ}</div>`:''}
+    <div class="mc-grid" id="mc-grid"></div>
+    <div class="fb" id="fb"></div>`;
+  body.appendChild(w);
+  const grid=document.getElementById('mc-grid');
+  s.opts.forEach(opt=>{
+    const btn=document.createElement('button');
+    btn.className='mc-btn';btn.textContent=opt;
+    btn.onclick=()=>checkMC(opt,s.ans,btn,grid);
+    grid.appendChild(btn);
+  });
+}
+function checkMC(chosen,ans,btn,grid){
+  grid.querySelectorAll('.mc-btn').forEach(b=>{b.disabled=true;b.onclick=null});
+  if(chosen===ans){
+    btn.classList.add('ok');S.xp+=5;S.correct++;syncXP();
+    showFB(true,`¡${ans} es correcto! 💖`,pick(['¡Eso es! 🔥','¡Perfecta! 🌸','¡Así se hace! ✨','¡Excelente! 💪']));
+  }else{
+    btn.classList.add('no');
+    grid.querySelectorAll('.mc-btn').forEach(b=>{if(+b.textContent===ans)b.classList.add('ok')});
+    S.lives=Math.max(0,S.lives-1);syncLives();
+    showFB(false,`La respuesta era ${ans} 💜`,`${ans} — ¡ya lo tienes para la próxima! ✨`);
+  }
+}
+
+// ── TYPE INPUT (teclado numérico) ─────────────
+function buildTypeInput(s,body){
+  S.typedVal='';
+  const w=mk('div','width:100%;display:flex;flex-direction:column;gap:14px;align-items:center');
+  w.innerHTML=`
+    <div class="type-badge">${s.label}</div>
+    <div class="prompt">${s.prompt}</div>
+    <div class="big-q">${s.bigQ}</div>
+    <div class="type-input-wrap">
+      <div class="type-input-display active" id="tid">_</div>
+      <div class="numpad" id="numpad"></div>
+    </div>
+    <div class="fb" id="fb"></div>`;
+  body.appendChild(w);
+
+  const display=document.getElementById('tid');
+  const pad=document.getElementById('numpad');
+
+  // Botones 1-9
+  [1,2,3,4,5,6,7,8,9].forEach(n=>{
+    const b=npBtn(n,()=>{
+      if(S.typedVal.length<4){S.typedVal+=n;display.textContent=S.typedVal;}
+    });
+    pad.appendChild(b);
+  });
+  // Fila 0: borrar, 0, ok
+  pad.appendChild(npBtn('⌫','del',()=>{
+    S.typedVal=S.typedVal.slice(0,-1);
+    display.textContent=S.typedVal||'_';
+  }));
+  pad.appendChild(npBtn(0,()=>{
+    if(S.typedVal.length<4){S.typedVal+='0';display.textContent=S.typedVal;}
+  }));
+  pad.appendChild(npBtn('✓','ok-btn',()=>checkType(s.ans,display)));
+  // Enter también funciona
+  window._typeEnter=(e)=>{if(e.key==='Enter')checkType(s.ans,display);
+    else if(e.key==='Backspace'){S.typedVal=S.typedVal.slice(0,-1);display.textContent=S.typedVal||'_';}
+    else if(/^\d$/.test(e.key)&&S.typedVal.length<4){S.typedVal+=e.key;display.textContent=S.typedVal;}
+  };
+  window.addEventListener('keydown',window._typeEnter);
+}
+function npBtn(label,classOrCb,cb){
+  const b=document.createElement('button');
+  b.className='np-btn';
+  b.textContent=label;
+  if(typeof classOrCb==='string'){b.classList.add(classOrCb);b.onclick=cb;}
+  else{b.onclick=classOrCb;}
+  return b;
+}
+function checkType(ans,display){
+  window.removeEventListener('keydown',window._typeEnter);
+  const val=parseInt(S.typedVal||'-1');
+  document.querySelectorAll('.np-btn').forEach(b=>b.disabled=true);
+  if(val===ans){
+    display.classList.remove('active');display.classList.add('ok');
+    display.textContent=val;
+    S.xp+=5;S.correct++;syncXP();
+    showFB(true,`¡${ans}! ¡Exacto! 💖`,pick(['¡Eso es! 🔥','¡Brillante! 🌸','¡Crack! 💪']));
+  }else{
+    display.classList.remove('active');display.classList.add('no');
+    display.textContent=S.typedVal||'?';
+    S.lives=Math.max(0,S.lives-1);syncLives();
+    showFB(false,`Era ${ans} 💜`,`Tu respuesta fue ${S.typedVal||'vacía'} — ¡inténtalo de nuevo! ✨`);
+  }
+}
+
+// ── DRAG PAIRS ───────────────────────────────
+function buildDrag(s,body){
+  const shuffled=[...s.pairs].sort(()=>Math.random()-.5);
+  const w=mk('div','width:100%;display:flex;flex-direction:column;gap:14px;align-items:center');
+  w.innerHTML=`
+    <div class="type-badge">${s.label}</div>
+    <div class="prompt" style="font-size:1rem;color:var(--soft)">Arrastra cada multiplicación a su resultado</div>
+    <div class="drag-area">
+      <div class="drag-col">
+        <div class="drag-col-title">MULTIPLICACIONES</div>
+        <div id="di" style="display:flex;flex-direction:column;gap:9px"></div>
+      </div>
+      <div class="drag-col">
+        <div class="drag-col-title">RESULTADOS</div>
+        <div id="dz" style="display:flex;flex-direction:column;gap:9px"></div>
+      </div>
+    </div>
+    <button class="check-btn" id="drag-chk" disabled onclick="checkDrag()">Verificar ✓</button>
+    <div class="fb" id="fb"></div>`;
+  body.appendChild(w);
+
+  s.pairs.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='drag-item';d.textContent=p.q;
+    d.dataset.q=p.q;d.dataset.a=String(p.a);d.draggable=true;
+    d.addEventListener('dragstart',e=>{
+      e.dataTransfer.setData('q',p.q);e.dataTransfer.setData('a',String(p.a));
+      d.classList.add('dragging');
+    });
+    d.addEventListener('dragend',()=>d.classList.remove('dragging'));
+    addTouchDragItem(d);
+    document.getElementById('di').appendChild(d);
+  });
+
+  shuffled.forEach(p=>{
+    const z=document.createElement('div');
+    z.className='drop-zone';z.dataset.a=String(p.a);
+    z.innerHTML=`<span class="drop-val">${p.a}</span>`;
+    z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('over')});
+    z.addEventListener('dragleave',()=>z.classList.remove('over'));
+    z.addEventListener('drop',e=>{
+      e.preventDefault();z.classList.remove('over');
+      dropPair(z,e.dataTransfer.getData('q'),e.dataTransfer.getData('a'));
+    });
+    document.getElementById('dz').appendChild(z);
+  });
+}
+function dropPair(zone,q,a){
+  document.querySelectorAll('.drop-zone').forEach(z=>{
+    if(z.dataset.placed===q){
+      z.dataset.placed='';
+      z.innerHTML=`<span class="drop-val">${z.dataset.a}</span>`;
+      z.classList.remove('ok-drop','no-drop');
+    }
+  });
+  document.querySelectorAll('.drag-item').forEach(d=>{if(d.dataset.q===q)d.classList.remove('placed')});
+  zone.dataset.placed=q;
+  zone.innerHTML=`<span class="drop-val">${zone.dataset.a}</span><span class="drop-chip">${q}</span>`;
+  zone.classList.remove('ok-drop','no-drop');
+  document.querySelectorAll('.drag-item').forEach(d=>{if(d.dataset.q===q)d.classList.add('placed')});
+  const total=document.querySelectorAll('.drop-zone').length;
+  const filled=document.querySelectorAll('.drop-zone[data-placed]:not([data-placed=""])').length;
+  document.getElementById('drag-chk').disabled=(filled<total);
+}
+function checkDrag(){
+  const pairs=S.steps[S.idx].pairs;
+  let allOk=true;
+  document.querySelectorAll('.drop-zone').forEach(z=>{
+    const exp=pairs.find(p=>String(p.a)===z.dataset.a)?.q;
+    if(z.dataset.placed===exp)z.classList.add('ok-drop');
+    else{z.classList.add('no-drop');allOk=false;}
+  });
+  document.getElementById('drag-chk').disabled=true;
+  if(allOk){S.xp+=8;S.correct++;syncXP();showFB(true,'¡Todos los pares correctos! 🎉','¡Crack total! 💖');}
+  else{S.lives=Math.max(0,S.lives-1);syncLives();showFB(false,'Algunos pares estaban mal 💜','Los rojos son los incorrectos — ¡sigue practicando!');}
+}
+
+// ── FILL (drag chips) ─────────────────────────
+function buildFill(s,body){
+  // side=left  → hueco=s.correct(=t), visible=s.known(=b)
+  // side=right → hueco=s.correct(=b), visible=s.known(=t)
+  const BLANK = `<div class="eq-blank" id="blank">?</div>`;
+  const VIS   = `<span style="color:var(--pk)">${s.known}</span>`;
+  const lH = s.side==='left'  ? BLANK : VIS;
+  const rH = s.side==='right' ? BLANK : VIS;
+  const w=mk('div','width:100%;display:flex;flex-direction:column;gap:14px;align-items:center');
+  w.innerHTML=`
+    <div class="type-badge">${s.label}</div>
+    <div class="prompt">Arrastra el número que falta</div>
+    <div class="eq-row">${lH}<span style="color:var(--lv)">×</span>${rH}<span style="color:var(--soft)">=</span><span style="color:var(--grn);font-family:'Pacifico',cursive">${s.ans}</span></div>
+    <div class="num-bank" id="nb"></div>
+    <button class="check-btn" id="fill-chk" disabled onclick="checkFill()">Verificar ✓</button>
+    <div class="fb" id="fb"></div>`;
+  body.appendChild(w);
+  const blank=document.getElementById('blank');
+  blank.addEventListener('dragover',e=>{e.preventDefault();blank.classList.add('over')});
+  blank.addEventListener('dragleave',()=>blank.classList.remove('over'));
+  blank.addEventListener('drop',e=>{e.preventDefault();blank.classList.remove('over');placeBlank(blank,e.dataTransfer.getData('nv'))});
+  s.opts.forEach(opt=>{
+    const c=document.createElement('div');
+    c.className='num-chip';c.textContent=opt;c.dataset.nv=String(opt);c.draggable=true;
+    c.addEventListener('dragstart',e=>{e.dataTransfer.setData('nv',String(opt));c.style.opacity='.4'});
+    c.addEventListener('dragend',()=>c.style.opacity='1');
+    addTouchDragChip(c,blank);
+    document.getElementById('nb').appendChild(c);
+  });
+}
+function placeBlank(blank,val){
+  blank.textContent=val;blank.dataset.val=val;blank.classList.add('filled');
+  document.querySelectorAll('.num-chip').forEach(c=>c.classList.toggle('used',c.dataset.nv===val));
+  document.getElementById('fill-chk').disabled=false;
+}
+function checkFill(){
+  const blank=document.getElementById('blank');
+  const s=S.steps[S.idx];
+  const exp=s.correct; // factor oculto precalculado
+  document.getElementById('fill-chk').disabled=true;
+  if(+blank.dataset.val===exp){
+    blank.style.cssText='background:#D4F5E5;border-color:var(--grn);border-style:solid;color:#1a7a45';
+    S.xp+=5;S.correct++;syncXP();
+    showFB(true,`¡Correcto! Es ${exp} 💖`,`${s.t} × ${s.b} = ${s.ans} ✨`);
+  }else{
+    blank.style.cssText='background:#FFE5EC;border-color:var(--red);border-style:solid';
+    S.lives=Math.max(0,S.lives-1);syncLives();
+    showFB(false,`Era ${exp} 💜`,`${s.t} × ${s.b} = ${s.ans} — ¡ya lo tienes!`);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  FEEDBACK
+// ══════════════════════════════════════════════
+function showFB(ok,title,msg){
+  const fb=document.getElementById('fb');
+  fb.className=`fb show ${ok?'ok':'no'}`;
+  const isLast=S.idx>=S.steps.length-1;
+  fb.innerHTML=`
+    <div class="fb-title">${ok?'✅ ':''} ${title}</div>
+    <div class="fb-body">${msg}</div>
+    <button class="next-btn" onclick="nextStep()">${isLast?'Ver resultados 🎉':'Siguiente →'}</button>`;
+}
+
+// ══════════════════════════════════════════════
+//  COMPLETE
+// ══════════════════════════════════════════════
+function showComplete(){
+  closeOv();
+  saveStreak(); // guardar racha
+  const total=S.steps.length;
+  const pct=Math.round(S.correct/total*100);
+  const emojis=pct>=80?'🏆':pct>=60?'🌟':pct>=40?'💛':'🌱';
+  const msgs=[
+    `${S.boy.name} está muy impresionado 😏💌`,
+    '¡Las tablas ya no te dan miedo! 💪🌸',
+    '¡Estás conquistando las matemáticas! 💖',
+    '¡Cada día que practicas eres más poderosa! ✨',
+    `¡Racha de ${S.streak} días! Sigue así 🔥`
+  ];
+  document.getElementById('comp-emoji').textContent=emojis;
+  document.getElementById('comp-msg').textContent=pick(msgs);
+  document.getElementById('comp-stat').textContent=
+    `${S.correct}/${total} correctas · ${S.xp} XP · 🔥 ${S.streak} días`;
+  document.getElementById('comp').classList.add('show');
+  confetti();
+}
+function goHome(){
+  document.getElementById('comp').classList.remove('show');
+  document.getElementById('prog-fill').style.width='0%';
+  document.getElementById('prog-label').textContent='0 / 10';
+}
+
+// ══════════════════════════════════════════════
+//  TOUCH DRAG — pairs
+// ══════════════════════════════════════════════
+function addTouchDragItem(el){
+  const ghost=document.getElementById('drag-ghost');
+  el.addEventListener('touchstart',e=>{
+    const t=e.touches[0];
+    ghost.textContent=el.textContent;ghost.style.display='block';
+    ghost.style.left=t.clientX+'px';ghost.style.top=t.clientY+'px';
+  },{passive:true});
+  el.addEventListener('touchmove',e=>{
+    const t=e.touches[0];
+    ghost.style.left=t.clientX+'px';ghost.style.top=t.clientY+'px';
+    e.preventDefault();
+  },{passive:false});
+  el.addEventListener('touchend',e=>{
+    ghost.style.display='none';
+    const t=e.changedTouches[0];
+    const zone=document.elementFromPoint(t.clientX,t.clientY)?.closest('.drop-zone');
+    if(zone)dropPair(zone,el.dataset.q,el.dataset.a);
+  });
+}
+
+// ══════════════════════════════════════════════
+//  TOUCH DRAG — chips
+// ══════════════════════════════════════════════
+function addTouchDragChip(chip,blank){
+  const ghost=document.getElementById('drag-ghost');
+  chip.addEventListener('touchstart',e=>{
+    const t=e.touches[0];
+    ghost.textContent=chip.textContent;ghost.style.display='block';
+    ghost.style.left=t.clientX+'px';ghost.style.top=t.clientY+'px';
+  },{passive:true});
+  chip.addEventListener('touchmove',e=>{
+    const t=e.touches[0];
+    ghost.style.left=t.clientX+'px';ghost.style.top=t.clientY+'px';
+    e.preventDefault();
+  },{passive:false});
+  chip.addEventListener('touchend',e=>{
+    ghost.style.display='none';
+    const t=e.changedTouches[0];
+    if(document.elementFromPoint(t.clientX,t.clientY)?.closest('#blank'))
+      placeBlank(blank,chip.dataset.nv);
+  });
+}
+
+// ══════════════════════════════════════════════
+//  CONFETTI
+// ══════════════════════════════════════════════
+function confetti(){
+  const w=document.getElementById('conf-wrap');w.innerHTML='';
+  const cols=['#FF6B9D','#C084FC','#FFD700','#52C97A','#FFB3C6','#D8A8FC'];
+  for(let i=0;i<65;i++){
+    const c=document.createElement('div');c.className='cf';
+    c.style.left=Math.random()*100+'vw';
+    const sz=7+Math.random()*9;
+    c.style.width=sz+'px';c.style.height=sz+'px';
+    c.style.borderRadius=Math.random()>.5?'50%':'3px';
+    c.style.background=pick(cols);
+    c.style.animationDuration=(1.4+Math.random()*2)+'s';
+    c.style.animationDelay=(Math.random()*.7)+'s';
+    w.appendChild(c);
+  }
+  setTimeout(()=>w.innerHTML='',3500);
+}
+
+// ══════════════════════════════════════════════
+//  HELPER
+// ══════════════════════════════════════════════
+function mk(tag,css){const e=document.createElement(tag);e.style.cssText=css;return e;}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+spawnHearts();
+loadStreak();
+setupDay();
+startTickerRotation();
+</script>
+</body>
+</html>
